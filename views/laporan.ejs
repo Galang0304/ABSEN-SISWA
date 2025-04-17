@@ -185,105 +185,105 @@
 
             <!-- Filter Section -->
             <div class="card mb-4">
-                <div class="card-body">
+                        <div class="card-body">
                     <h6 class="card-title mb-3">Filter Laporan</h6>
-                    <form action="/laporan" method="GET" class="row g-3">
-                        <div class="col-md-4">
+                            <form action="/laporan" method="GET" class="row g-3">
+                                <div class="col-md-4">
                             <label for="bulan" class="form-label">
                                 <i class="bx bx-calendar"></i> Bulan
                             </label>
                             <select class="form-select" id="bulan" name="bulan">
-                                <option value="">Pilih Bulan</option>
-                                <option value="01" <%= filter.bulan === '01' ? 'selected' : '' %>>Januari</option>
-                                <option value="02" <%= filter.bulan === '02' ? 'selected' : '' %>>Februari</option>
-                                <option value="03" <%= filter.bulan === '03' ? 'selected' : '' %>>Maret</option>
-                                <option value="04" <%= filter.bulan === '04' ? 'selected' : '' %>>April</option>
-                                <option value="05" <%= filter.bulan === '05' ? 'selected' : '' %>>Mei</option>
-                                <option value="06" <%= filter.bulan === '06' ? 'selected' : '' %>>Juni</option>
-                                <option value="07" <%= filter.bulan === '07' ? 'selected' : '' %>>Juli</option>
-                                <option value="08" <%= filter.bulan === '08' ? 'selected' : '' %>>Agustus</option>
-                                <option value="09" <%= filter.bulan === '09' ? 'selected' : '' %>>September</option>
-                                <option value="10" <%= filter.bulan === '10' ? 'selected' : '' %>>Oktober</option>
-                                <option value="11" <%= filter.bulan === '11' ? 'selected' : '' %>>November</option>
-                                <option value="12" <%= filter.bulan === '12' ? 'selected' : '' %>>Desember</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
+                                        <option value="">Pilih Bulan</option>
+                                        <option value="01" <%= filter.bulan === '01' ? 'selected' : '' %>>Januari</option>
+                                        <option value="02" <%= filter.bulan === '02' ? 'selected' : '' %>>Februari</option>
+                                        <option value="03" <%= filter.bulan === '03' ? 'selected' : '' %>>Maret</option>
+                                        <option value="04" <%= filter.bulan === '04' ? 'selected' : '' %>>April</option>
+                                        <option value="05" <%= filter.bulan === '05' ? 'selected' : '' %>>Mei</option>
+                                        <option value="06" <%= filter.bulan === '06' ? 'selected' : '' %>>Juni</option>
+                                        <option value="07" <%= filter.bulan === '07' ? 'selected' : '' %>>Juli</option>
+                                        <option value="08" <%= filter.bulan === '08' ? 'selected' : '' %>>Agustus</option>
+                                        <option value="09" <%= filter.bulan === '09' ? 'selected' : '' %>>September</option>
+                                        <option value="10" <%= filter.bulan === '10' ? 'selected' : '' %>>Oktober</option>
+                                        <option value="11" <%= filter.bulan === '11' ? 'selected' : '' %>>November</option>
+                                        <option value="12" <%= filter.bulan === '12' ? 'selected' : '' %>>Desember</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
                             <label for="tahun" class="form-label">
                                 <i class="bx bx-calendar"></i> Tahun
                             </label>
                             <select class="form-select" id="tahun" name="tahun">
-                                <option value="">Pilih Tahun</option>
+                                        <option value="">Pilih Tahun</option>
                                 <% let currentYear = new Date().getFullYear();
                                 for(let year = currentYear; year >= currentYear-5; year--) { %>
                                     <option value="<%= year %>" <%= filter.tahun === year.toString() ? 'selected' : '' %>><%= year %></option>
-                                <% } %>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
                             <label for="kelas" class="form-label">
                                 <i class="bx bx-building-house"></i> Kelas
                             </label>
                             <select class="form-select" id="kelas" name="kelas_id">
-                                <option value="">Semua Kelas</option>
+                                        <option value="">Semua Kelas</option>
                                 <% kelasList.forEach(function(kelas) { %>
                                     <option value="<%= kelas.id %>" <%= filter.kelas_id == kelas.id ? 'selected' : '' %>>
                                         Kelas <%= kelas.nama_kelas %>
                                     </option>
                                 <% }); %>
-                            </select>
-                        </div>
-                        <div class="col-12">
+                                    </select>
+                                </div>
+                                <div class="col-12">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bx bx-filter-alt"></i> Tampilkan
                             </button>
                             <button type="button" class="btn btn-success" onclick="exportExcel()">
                                 <i class="bx bx-export"></i> Export Excel
-                            </button>
+                                        </button>
                         </div>
                     </form>
                 </div>
             </div>
 
             <!-- Table Section -->
-            <div class="table-responsive">
+                        <div class="table-responsive">
                 <% if (typeof data !== 'undefined' && data && data.length > 0) { %>
                 <table class="table table-hover">
                     <thead class="table-light">
-                        <tr>
-                            <th>No</th>
-                            <th>NIS</th>
-                            <th>NISN</th>
-                            <th>Nama</th>
-                            <th>Kelas</th>
-                            <th>Tanggal</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% data.forEach((item, index) => { %>
-                        <tr>
-                            <td><%= index + 1 %></td>
-                            <td><%= item.nis %></td>
-                            <td><%= item.nisn %></td>
-                            <td><%= item.nama %></td>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>NIS</th>
+                                        <th>NISN</th>
+                                        <th>Nama</th>
+                                        <th>Kelas</th>
+                                        <th>Tanggal</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% data.forEach((item, index) => { %>
+                                        <tr>
+                                            <td><%= index + 1 %></td>
+                                            <td><%= item.nis %></td>
+                                            <td><%= item.nisn %></td>
+                                            <td><%= item.nama %></td>
                             <td><%= item.nama_kelas %></td>
                             <td><%= new Date(item.tanggal).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></td>
                             <td>
                                 <span class="status-badge <%= item.status.toLowerCase() %>">
-                                    <%= item.status %>
-                                </span>
-                            </td>
-                        </tr>
+                                                    <%= item.status %>
+                                                </span>
+                                            </td>
+                                        </tr>
                         <% }); %>
-                    </tbody>
-                </table>
+                                </tbody>
+                            </table>
                 <% } else { %>
                 <div class="alert alert-info text-center my-4">
                     <i class="bx bx-info-circle me-2"></i>
                     Tidak ada data absensi untuk ditampilkan. Silakan pilih filter terlebih dahulu.
                 </div>
-                <% } %>
+            <% } %>
             </div>
         </div>
     </div>
