@@ -1,0 +1,56 @@
+<!-- Sidebar -->
+<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-primary sidebar">
+    <div class="position-sticky">
+        <div class="sidebar-header d-flex align-items-center p-3">
+            <img src="../../public/images/logo-sekolah.png" alt="Logo Sekolah" class="school-logo">
+            <div>
+                <h1 class="sidebar-title text-white fs-5 mb-0">Absensi Siswa</h1>
+                <p class="sidebar-subtitle text-white-50 small mb-0">SDN 203 BONTOMACINNA</p>
+            </div>
+        </div>
+
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link <%= path === '/dashboard' ? 'active' : '' %>" href="/dashboard">
+                    <i class="bx bxs-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <%= path === '/absensi' ? 'active' : '' %>" href="/absensi">
+                    <i class="bx bxs-calendar-check"></i>
+                    <span>Absensi</span>
+                </a>
+            </li>
+            <% if (guru.role === 'superadmin') { %>
+            <li class="nav-item">
+                <a class="nav-link <%= path === '/siswa' ? 'active' : '' %>" href="/siswa">
+                    <i class="bx bxs-user-detail"></i>
+                    <span>Data Siswa</span>
+                </a>
+            </li>
+            <% } %>
+            <li class="nav-item">
+                <a class="nav-link <%= path === '/laporan' ? 'active' : '' %>" href="/laporan">
+                    <i class="bx bxs-report"></i>
+                    <span>Laporan</span>
+                </a>
+            </li>
+            <% if (guru.role === 'superadmin') { %>
+            <li class="nav-item">
+                <a class="nav-link <%= path === '/manajemen-guru' ? 'active' : '' %>" href="/manajemen-guru">
+                    <i class="bx bxs-user-account"></i>
+                    <span>Guru</span>
+                </a>
+            </li>
+            <% } %>
+        </ul>
+
+        <div class="position-absolute bottom-0 start-0 w-100 p-3">
+            <a href="/logout" class="nav-link text-white d-flex align-items-center">
+                <i class="bx bx-log-out me-2"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+</nav> 

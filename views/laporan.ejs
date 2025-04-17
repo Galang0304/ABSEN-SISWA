@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Absensi - Sistem Absensi Siswa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            background: #4723D9;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        /* Form & Table Container */
+        .content-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+            min-width: 80px;
+            color: white;
+        }
+
+        .hadir { background-color: #198754; }
+        .sakit { background-color: #0d6efd; }
+        .izin { background-color: #ffc107; color: #000; }
+        .alpha { background-color: #dc3545; }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #4723D9;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        .bottom-nav .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            padding: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bottom-nav .nav-link i {
+            font-size: 1.2rem;
+        }
+
+        .bottom-nav .nav-link.active {
+            color: white !important;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+                padding-bottom: 70px;
+            }
+
+            .content-wrapper {
+                padding: 15px;
+            }
+
+            .bottom-nav {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="d-flex align-items-center mb-4">
+            <img src="/images/logo-sekolah.png" alt="Logo Sekolah" style="width: 45px; height: 45px; object-fit: contain;">
+            <div class="ms-3">
+                <h6 class="text-white mb-0">SDN 203 BONTOMACINNA</h6>
+                <small class="text-white-50">Sistem Absensi</small>
+            </div>
+        </div>
+
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="/dashboard">
+                    <i class="bx bxs-dashboard me-2"></i>Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="/absensi">
+                    <i class="bx bxs-calendar-check me-2"></i>Absensi
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="/siswa">
+                    <i class="bx bxs-user-detail me-2"></i>Data Siswa
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white active" href="/laporan">
+                    <i class="bx bxs-report me-2"></i>Laporan
+                </a>
+            </li>
+            <% if (guru.role === 'superadmin') { %>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="/manajemen-guru">
+                    <i class="bx bxs-user-account me-2"></i>Guru
+                </a>
+            </li>
+            <% } %>
+            <li class="nav-item mt-auto">
+                <a class="nav-link text-white" href="/logout">
+                    <i class="bx bx-log-out me-2"></i>Logout
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">Laporan Absensi</h5>
+                <div>
+                    <span>Selamat datang, <%= guru.nama %></span>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Filter Laporan</h6>
+                    <form action="/laporan" method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="bulan" class="form-label">
+                                <i class="bx bx-calendar"></i> Bulan
+                            </label>
+                            <select class="form-select" id="bulan" name="bulan">
+                                <option value="">Pilih Bulan</option>
+                                <option value="01" <%= filter.bulan === '01' ? 'selected' : '' %>>Januari</option>
+                                <option value="02" <%= filter.bulan === '02' ? 'selected' : '' %>>Februari</option>
+                                <option value="03" <%= filter.bulan === '03' ? 'selected' : '' %>>Maret</option>
+                                <option value="04" <%= filter.bulan === '04' ? 'selected' : '' %>>April</option>
+                                <option value="05" <%= filter.bulan === '05' ? 'selected' : '' %>>Mei</option>
+                                <option value="06" <%= filter.bulan === '06' ? 'selected' : '' %>>Juni</option>
+                                <option value="07" <%= filter.bulan === '07' ? 'selected' : '' %>>Juli</option>
+                                <option value="08" <%= filter.bulan === '08' ? 'selected' : '' %>>Agustus</option>
+                                <option value="09" <%= filter.bulan === '09' ? 'selected' : '' %>>September</option>
+                                <option value="10" <%= filter.bulan === '10' ? 'selected' : '' %>>Oktober</option>
+                                <option value="11" <%= filter.bulan === '11' ? 'selected' : '' %>>November</option>
+                                <option value="12" <%= filter.bulan === '12' ? 'selected' : '' %>>Desember</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="tahun" class="form-label">
+                                <i class="bx bx-calendar"></i> Tahun
+                            </label>
+                            <select class="form-select" id="tahun" name="tahun">
+                                <option value="">Pilih Tahun</option>
+                                <% let currentYear = new Date().getFullYear();
+                                for(let year = currentYear; year >= currentYear-5; year--) { %>
+                                    <option value="<%= year %>" <%= filter.tahun === year.toString() ? 'selected' : '' %>><%= year %></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="kelas" class="form-label">
+                                <i class="bx bx-building-house"></i> Kelas
+                            </label>
+                            <select class="form-select" id="kelas" name="kelas_id">
+                                <option value="">Semua Kelas</option>
+                                <% kelasList.forEach(function(kelas) { %>
+                                    <option value="<%= kelas.id %>" <%= filter.kelas_id == kelas.id ? 'selected' : '' %>>
+                                        Kelas <%= kelas.nama_kelas %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bx bx-filter-alt"></i> Tampilkan
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="exportExcel()">
+                                <i class="bx bx-export"></i> Export Excel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-responsive">
+                <% if (typeof data !== 'undefined' && data && data.length > 0) { %>
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>No</th>
+                            <th>NIS</th>
+                            <th>NISN</th>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Tanggal</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% data.forEach((item, index) => { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td><%= item.nis %></td>
+                            <td><%= item.nisn %></td>
+                            <td><%= item.nama %></td>
+                            <td><%= item.nama_kelas %></td>
+                            <td><%= new Date(item.tanggal).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></td>
+                            <td>
+                                <span class="status-badge <%= item.status.toLowerCase() %>">
+                                    <%= item.status %>
+                                </span>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                <% } else { %>
+                <div class="alert alert-info text-center my-4">
+                    <i class="bx bx-info-circle me-2"></i>
+                    Tidak ada data absensi untuk ditampilkan. Silakan pilih filter terlebih dahulu.
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a class="nav-link" href="/dashboard">
+            <i class="bx bxs-dashboard"></i>
+            <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="/absensi">
+            <i class="bx bxs-calendar-check"></i>
+            <span>Absensi</span>
+        </a>
+        <a class="nav-link" href="/siswa">
+            <i class="bx bxs-user-detail"></i>
+            <span>Siswa</span>
+        </a>
+        <a class="nav-link active" href="/laporan">
+            <i class="bx bxs-report"></i>
+            <span>Laporan</span>
+        </a>
+        <% if (guru.role === 'superadmin') { %>
+        <a class="nav-link" href="/manajemen-guru">
+            <i class="bx bxs-user-account"></i>
+            <span>Guru</span>
+        </a>
+        <% } %>
+        <a class="nav-link text-warning" href="/logout">
+            <i class="bx bx-log-out"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function exportExcel() {
+            const bulan = document.getElementById('bulan').value;
+            const tahun = document.getElementById('tahun').value;
+            const kelas_id = document.getElementById('kelas').value;
+            
+            window.location.href = `/laporan/export?bulan=${bulan}&tahun=${tahun}&kelas_id=${kelas_id}`;
+        }
+
+        // Set nilai default untuk bulan dan tahun saat ini jika tidak ada filter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.has('bulan') && !urlParams.has('tahun')) {
+                const currentDate = new Date();
+                const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+                document.getElementById('bulan').value = currentMonth;
+                document.getElementById('tahun').value = currentDate.getFullYear();
+            }
+        });
+    </script>
+</body>
+</html> 

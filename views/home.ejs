@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDN 203 BONTOMACINNA - Sistem Informasi Absensi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4723D9;
+            --secondary-color: #3b1bb8;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header & Login Button */
+        .header {
+            background: var(--primary-color);
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .login-btn {
+            background: white;
+            color: var(--primary-color);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .login-btn:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-top: 90px;
+        }
+
+        /* Table Styles */
+        .table-container {
+            margin: 15px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex: 1;
+        }
+
+        .table-responsive {
+            margin: 0;
+            padding: 15px;
+        }
+
+        .table th {
+            background: var(--primary-color);
+            color: white;
+            white-space: nowrap;
+        }
+
+        /* School Info Section */
+        .school-info {
+            padding: 30px 15px;
+            background: white;
+            margin: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .school-building-img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .guru-group-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .footer h5 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer ul li a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer ul li a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            background: var(--secondary-color);
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header img {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .header h5 {
+                font-size: 0.9rem;
+            }
+            
+            .header small {
+                font-size: 0.75rem;
+            }
+            
+            .login-btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .filter-section {
+                margin-top: 80px;
+            }
+        }
+
+        /* Login Modal Styles */
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .school-logo {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .school-name {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .school-subtitle {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            z-index: 10;
+        }
+
+        .input-with-icon {
+            padding-left: 45px;
+            border-radius: 10px;
+            padding: 12px 12px 12px 45px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .input-with-icon:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(71, 35, 217, 0.25);
+        }
+
+        .btn-login {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Modal Animation */
+        .modal.fade .modal-dialog {
+            transform: scale(0.8);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Login Button -->
+    <header class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="/images/logo-sekolah.png" alt="Logo SDN 203 BONTOMACINNA" style="width: 50px; height: 50px; object-fit: contain;">
+                    <div>
+                        <h5 class="text-white mb-0 fw-bold">SDN 203 BONTOMACINNA</h5>
+                        <small class="text-white-50">Sistem Informasi Absensi</small>
+                    </div>
+                </div>
+                <button class="login-btn" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    <i class="bx bx-log-in"></i> Login Guru
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="kelas" class="form-label">Filter Kelas</label>
+                    <select class="form-select" id="kelas" onchange="applyFilter()">
+                        <option value="">Semua Kelas</option>
+                        <% classes.forEach(function(kelas) { %>
+                            <option value="<%= kelas.id %>" <%= selectedClass == kelas.id ? 'selected' : '' %>><%= kelas.nama_kelas %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="tanggal" class="form-label">Tanggal Absensi</label>
+                    <input type="date" class="form-control" id="tanggal" onchange="applyFilter()" value="<%= selectedDate %>" max="<%= new Date().toISOString().split('T')[0] %>">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>NIS</th>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let count = 1; %>
+                    <% attendanceData.forEach(function(data) { %>
+                        <tr>
+                            <td><%= count++ %></td>
+                            <td><%= data.nis %></td>
+                            <td><%= data.nama_siswa %></td>
+                            <td><%= data.nama_kelas %></td>
+                            <td>
+                                <% let badgeClass = ''; %>
+                                <% if (data.status === 'Hadir') { %>
+                                    <% badgeClass = 'bg-success'; %>
+                                <% } else if (data.status === 'Sakit') { %>
+                                    <% badgeClass = 'bg-warning'; %>
+                                <% } else if (data.status === 'Izin') { %>
+                                    <% badgeClass = 'bg-info'; %>
+                                <% } else { %>
+                                    <% badgeClass = 'bg-danger'; %>
+                                <% } %>
+                                <span class="badge <%= badgeClass %>"><%= data.status %></span>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- School Info -->
+    <div class="school-info">
+        <div class="container">
+            <h2 class="text-center mb-4">Profil Sekolah</h2>
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <img src="/images/gedung-sekolah.png" alt="Gedung Sekolah" class="school-building-img">
+                    <h4>SDN 203 BONTOMACINNA</h4>
+                    <p class="text-muted">Kec. Gantarang, Bulukumba</p>
+                    <p>Fasilitas Sekolah:</p>
+                    <ul>
+                        <li>6 Ruang Kelas</li>
+                        <li>Perpustakaan</li>
+                        <li>Ruang Guru</li>
+                        <li>Lapangan Olahraga</li>
+                        <li>Musholla</li>
+                        <li>UKS</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h3 class="text-center mb-4">Tenaga Pendidik & Kependidikan</h3>
+                    <img src="/images/foto-guru.jpg" alt="Foto Guru" class="guru-group-img">
+                    <div class="row row-cols-2 row-cols-md-3 g-4 mt-3">
+                        <div class="col">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class='bx bxs-user-badge fs-1 text-primary'></i>
+                                    <h5 class="card-title mt-2">Kepala Sekolah</h5>
+                                    <h2 class="card-text">1</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class='bx bxs-group fs-1 text-primary'></i>
+                                    <h5 class="card-title mt-2">Guru</h5>
+                                    <h2 class="card-text">8</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class='bx bxs-book-reader fs-1 text-primary'></i>
+                                    <h5 class="card-title mt-2">Pustakawan</h5>
+                                    <h2 class="card-text">2</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class='bx bx-laptop fs-1 text-primary'></i>
+                                    <h5 class="card-title mt-2">Operator</h5>
+                                    <h2 class="card-text">1</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class='bx bx-shield-quarter fs-1 text-primary'></i>
+                                    <h5 class="card-title mt-2">Keamanan</h5>
+                                    <h2 class="card-text">1</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class='bx bxs-trash fs-1 text-primary'></i>
+                                    <h5 class="card-title mt-2">Kebersihan</h5>
+                                    <h2 class="card-text">1</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>SDN 203 BONTOMACINNA</h5>
+                    <p>Memberikan pendidikan berkualitas untuk masa depan anak bangsa.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Kontak</h5>
+                    <ul>
+                        <li><i class="bx bx-map"></i> Kec. Gantarang, Bulukumba</li>
+                        <li><i class="bx bx-phone"></i> (0413) 123456</li>
+                        <li><i class="bx bx-envelope"></i> sdn203@gmail.com</li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Link Terkait</h5>
+                    <ul>
+                        <li><a href="#">Beranda</a></li>
+                        <li><a href="#">Profil Sekolah</a></li>
+                        <li><a href="#">Login Guru</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p class="mb-0">&copy; 2024 SDN 203 BONTOMACINNA. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content login-card">
+                <div class="card-body p-5">
+                    <div class="text-center">
+                        <img src="/images/logo-sekolah.png" alt="Logo Sekolah" class="school-logo">
+                        <h1 class="school-name">SDN 203 BONTOMACINNA</h1>
+                        <p class="school-subtitle">Sistem Informasi Absensi Siswa</p>
+                    </div>
+                    
+                    <% if (typeof error !== 'undefined') { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bx bx-error-circle me-2"></i>
+                            <%= error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+
+                    <form action="/login" method="POST">
+                        <div class="mb-4">
+                            <div class="input-group">
+                                <i class="bx bx-user input-icon"></i>
+                                <input type="text" class="form-control input-with-icon" id="username" name="username" placeholder="Username" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="input-group">
+                                <i class="bx bx-lock-alt input-icon"></i>
+                                <input type="password" class="form-control input-with-icon" id="password" name="password" placeholder="Password" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-login btn-primary w-100 mb-3">
+                            <i class="bx bx-log-in-circle me-2"></i>Login
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function applyFilter() {
+            const kelas = document.getElementById('kelas').value;
+            const tanggal = document.getElementById('tanggal').value;
+            
+            let url = '/?';
+            if (kelas) url += `class_id=${kelas}&`;
+            if (tanggal) url += `date=${tanggal}`;
+            
+            window.location.href = url;
+        }
+
+        // Set filter values on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const date = urlParams.get('date');
+            if (!date) {
+                document.getElementById('tanggal').valueAsDate = new Date();
+            }
+        });
+    </script>
+</body>
+</html> 
