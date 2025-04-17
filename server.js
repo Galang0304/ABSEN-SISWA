@@ -780,41 +780,81 @@ app.get('/laporan/export', async (req, res) => {
         return res.redirect('/');
     }
 
-    const { bulan, tahun, kelas } = req.query;
-    let query = `
-        SELECT s.nis, s.nisn, s.nama, s.kelas,
-               COUNT(CASE WHEN a.status = 'Hadir' THEN 1 END) as total_hadir,
-               COUNT(CASE WHEN a.status = 'Izin' THEN 1 END) as total_izin,
-               COUNT(CASE WHEN a.status = 'Sakit' THEN 1 END) as total_sakit,
-               COUNT(CASE WHEN a.status = 'Alpha' THEN 1 END) as total_alpha
-        FROM siswa s
-        LEFT JOIN absensi a ON s.id = a.siswa_id
-    `;
-
-    const queryParams = [];
-    const whereClauses = [];
-
-    if (bulan && tahun) {
-        whereClauses.push("DATE_FORMAT(a.tanggal, '%Y-%m') = ?");
-        queryParams.push(`${tahun}-${bulan.padStart(2, '0')}`);
-    }
-
-    if (kelas) {
-        whereClauses.push("s.kelas = ?");
-        queryParams.push(kelas);
-    }
-
-    if (whereClauses.length > 0) {
-        query += ` WHERE ${whereClauses.join(' AND ')}`;
-    }
-
-    query += ` GROUP BY s.id ORDER BY s.kelas, s.nama`;
-
     try {
+        const { bulan, tahun, kelas_id } = req.query;
+        
+        // Query untuk mengambil data detail absensi
+        let query = `
+            SELECT 
+                s.nis, 
+                s.nisn, 
+                s.nama,
+                k.nama_kelas,
+                DATE_FORMAT(a.tanggal, '%d-%m-%Y') as tanggal,
+                COALESCE(a.status, 'Belum Absen') as status
+            FROM siswa s
+            INNER JOIN kelas k ON s.kelas_id = k.id
+            LEFT JOIN absensi a ON s.id = a.siswa_id
+        `;
+
+        const queryParams = [];
+        const whereClauses = [];
+
+        if (bulan && tahun) {
+            whereClauses.push("DATE_FORMAT(a.tanggal, '%Y-%m') = ?");
+            queryParams.push(`${tahun}-${bulan.padStart(2, '0')}`);
+        }
+
+        if (kelas_id) {
+            whereClauses.push("s.kelas_id = ?");
+            queryParams.push(kelas_id);
+        }
+
+        if (whereClauses.length > 0) {
+            query += ` WHERE ${whereClauses.join(' AND ')}`;
+        }
+
+        query += ` ORDER BY k.nama_kelas, s.nama, a.tanggal`;
+
         const [results] = await db.query(query, queryParams);
+
+        // Buat workbook baru
+        const wb = XLSX.utils.book_new();
+        
+        // Buat worksheet
+        const ws = XLSX.utils.json_to_sheet(results.map(row => ({
+            'NIS': row.nis,
+            'NISN': row.nisn,
+            'Nama': row.nama,
+            'Kelas': row.nama_kelas,
+            'Tanggal': row.tanggal,
+            'Status': row.status
+        })));
+
+        // Atur lebar kolom
+        const colWidths = [
+            { wch: 10 }, // NIS
+            { wch: 12 }, // NISN
+            { wch: 30 }, // Nama
+            { wch: 15 }, // Kelas
+            { wch: 12 }, // Tanggal
+            { wch: 15 }  // Status
+        ];
+        ws['!cols'] = colWidths;
+
+        // Tambahkan worksheet ke workbook
+        XLSX.utils.book_append_sheet(wb, ws, 'Laporan Absensi');
+
+        // Generate buffer
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+
+        // Set header response
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', `attachment; filename=laporan_absensi_${tahun}_${bulan}.xlsx`);
-        res.json(results);
+        
+        // Kirim file
+        res.send(excelBuffer);
+
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Terjadi kesalahan saat mengekspor data' });
