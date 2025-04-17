@@ -1,92 +1,71 @@
 # Sistem Absensi Siswa
 
-Aplikasi web untuk manajemen absensi siswa menggunakan Node.js dan MySQL.
+Aplikasi web untuk mengelola absensi siswa di sekolah.
 
-## 📋 Fitur Utama
+## Fitur
 
-- ✅ Manajemen data guru dan admin
-- 📚 Manajemen data siswa per kelas
-- 📅 Pencatatan absensi harian (hadir/izin/sakit/alpha)
-- 👥 Multi-role user (superadmin/guru)
-- 📸 Upload foto siswa
-- 📊 Export data absensi ke Excel
+- Login untuk guru dan admin
+- Manajemen data siswa
+- Pencatatan absensi harian
+- Laporan absensi (export ke Excel)
+- Dashboard statistik kehadiran
+- Manajemen guru (khusus admin)
 
-## 🛠️ Teknologi
+## Teknologi
 
-- Backend: Node.js + Express.js
-- Database: MySQL
-- View Engine: EJS
-- Authentication: JWT + Bcrypt
-- File Upload: Multer
-- Excel Processing: XLSX
+- Node.js
+- Express.js
+- MySQL
+- EJS Template Engine
+- Bootstrap 5
 
-## 📦 Struktur Database
+## Setup Database
 
-1. Tabel `guru`
-   - Data guru dan admin
-   - Role: superadmin/guru
-   - Autentikasi dengan username/password
+1. Buat database MySQL baru
+2. Import struktur database dari file `db_absensi.sql`
+3. Sesuaikan konfigurasi database di file `.env`
 
-2. Tabel `kelas`
-   - Informasi kelas
-   - Relasi dengan wali kelas
+## Instalasi
 
-3. Tabel `siswa`
-   - Data lengkap siswa
-   - Foto profil
-   - Relasi dengan kelas
-
-4. Tabel `absensi`
-   - Record absensi harian
-   - Status: hadir/izin/sakit/alpha
-   - Keterangan tambahan
-
-## 🚀 Instalasi
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Setup database:
-   ```bash
-   mysql -u root -p < database.sql
-   ```
-
-3. Konfigurasi environment:
-   - Copy `.env.example` ke `.env`
-   - Sesuaikan pengaturan database
-
-4. Jalankan aplikasi:
-   ```bash
-   # Development mode
-   npm run dev
-
-   # Production mode
-   npm start
-   ```
-
-## 👤 Akses Default
-
-- Username: admin
-- Password: admin123
-
-## 📁 Struktur Folder
-
-- `views/` - Template EJS
-- `public/` - Asset statis
-- `uploads/` - Storage foto siswa
-- `server.js` - Entry point aplikasi
-- `database.sql` - Schema database
-- `create-admin.js` - Script create admin
-
-## 💻 Development
-
-Gunakan mode development untuk fitur hot-reload:
+1. Clone repository ini
 ```bash
-npm run dev
+git clone https://github.com/Galang0304/ABSEN-SISWA.git
+cd ABSEN-SISWA
 ```
 
-## 📝 Lisensi
+2. Install dependencies
+```bash
+npm install
+```
 
-MIT License
+3. Setup file .env
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=root
+DB_NAME=db_absensi
+JWT_SECRET=rahasia123
+PORT=3001
+```
+
+4. Jalankan aplikasi
+```bash
+npm start
+```
+
+## Akses Aplikasi
+
+- Buka browser dan akses `http://localhost:3001`
+- Login dengan akun default:
+  - Username: admin
+  - Password: admin123
+
+## Deployment
+
+Aplikasi ini dapat di-deploy menggunakan layanan hosting seperti:
+- Railway
+- Render
+- Heroku
+- DigitalOcean
+
+Pastikan untuk mengatur environment variables yang diperlukan di platform hosting yang digunakan.
