@@ -39,7 +39,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: { 
-        secure: false, // set true if using HTTPS
+        secure: process.env.NODE_ENV === 'production',
         maxAge: 24 * 60 * 60 * 1000 // 24 jam
     }
 }));
@@ -47,12 +47,13 @@ app.use(session({
 // Inisialisasi Flash Messages
 app.use(flash());
 
-// Konfigurasi database
+// Konfigurasi database untuk Railway
 const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'root',
-    database: process.env.DB_NAME || 'db_absensi'
+    host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
+    user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
+    password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || 'root',
+    database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'db_absensi',
+    port: process.env.MYSQLPORT || 3306
 };
 
 // Buat koneksi database
@@ -987,6 +988,7 @@ app.get('/siswa/delete/:id', checkLogin, checkSuperAdmin, async (req, res) => {
     }
 });
 
+// Jalankan server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server berjalan di port ${PORT}`);
